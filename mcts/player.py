@@ -12,9 +12,6 @@ if TYPE_CHECKING:
 class Player(interface.Clonable, abc.ABC):
     """Define player."""
 
-    def __init__(self):
-        self.active = False
-
     @classmethod
     @abc.abstractmethod
     def possible_moves(cls, state: "State", player_key: "PlayerKey") -> List["Move"]:
@@ -30,7 +27,3 @@ class Player(interface.Clonable, abc.ABC):
         :param player_key: key for player declaring possible moves
         :return: list of all possible moves
         """
-
-    @abc.abstractmethod
-    def clone(self) -> "Player":
-        return Player()

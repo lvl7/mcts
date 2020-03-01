@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, Callable, List
 
 if TYPE_CHECKING:
     from mcts.state import State
+    from mcts.custom_type import PlayerKey
 
 
 class Move:
@@ -24,18 +25,26 @@ class Move:
     def __init__(
             self,
             state_from: "State",
-            player_in_move_name: str,
+            player_in_move_key: "PlayerKey",
             action: Callable[["State"], None],
             consequences: List[Callable[["State"], None]]
     ):
-        self.player_in_move_name = player_in_move_name
+        """
+        Initialize move.
+
+        :param state_from: state from where move begins
+        :param player_in_move_key: key for getting player from state
+        :param action: action defining move - should define only one action - like playing a card
+        :param consequences: list of consequences after ``action`` - like adding score; redraw card; end turn
+        """
+        self.player_in_move_key = player_in_move_key
         self.state_from = state_from
         self.action = action
         self.consequences = consequences
 
     def execute(self) -> "State":
         """
-        Create state be executing action and each of consequences on a copy of ``state_from``.
+        Create state by executing action and each of consequences on a copy of ``state_from``.
 
         :returns: new state
         """

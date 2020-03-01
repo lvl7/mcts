@@ -72,7 +72,7 @@ class Player(player.Player):
         return [
             Move(
                 state_from=state,
-                player_in_move_name=player.name,
+                player_in_move_key=player.name,
                 action=partial(Player.play_card, caster_key=player_key, card=card),
                 consequences=[
                     player.end_turn,

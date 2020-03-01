@@ -21,6 +21,11 @@ class State(abc.ABC):
     _nr = 0
 
     def __init__(self, players: Dict["PlayerKey", "Player"]):
+        """
+        Initialize state.
+
+        :param players: map players identifier to players
+        """
         self.players = players
 
         self.final = False
