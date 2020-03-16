@@ -2,7 +2,7 @@ import itertools
 
 import random
 from functools import partial
-from typing import List
+from typing import List, Mapping, Dict
 
 from mcts import interface
 from mcts import player
@@ -90,7 +90,7 @@ class Player(player.Player):
         )
 
 
-if __name__ == "__main__":
+def init_deck() -> "Player":
     deck = Player(
         name="DECK",
         hand=[
@@ -101,6 +101,10 @@ if __name__ == "__main__":
     )
     random.shuffle(deck.hand)
 
+    return deck
+
+
+def init_players(deck: "Player") -> Dict[str, "Player"]:
     players = {}
 
     for player_name in player_names:
@@ -113,14 +117,14 @@ if __name__ == "__main__":
             active=False,
         )
 
-    list(players.values())[0].active = True
-    players["BOARD"] = Player("BOARD", [], active=False)
-    players[deck.name] = deck
+    return players
 
-    state = State(
-        players=players,
-    )
 
+def init_board() -> "Player":
+    return Player("BOARD", [], active=False)
+
+
+def execute_game(state: "State"):
     state.execute_one_move()
     state.execute_one_move()
     state.execute_one_move()
@@ -129,3 +133,24 @@ if __name__ == "__main__":
     state.execute_one_move()
 
     draw_tree.draw(state)
+
+
+def main():
+    deck = init_deck()
+    board = init_board()
+    players = init_players(deck)
+
+    list(players.values())[0].active = True
+
+    players[board.name] = board
+    players[deck.name] = deck
+
+    state = State(
+        players=players,
+    )
+
+    execute_game(state)
+
+
+if __name__ == "__main__":
+    main()
