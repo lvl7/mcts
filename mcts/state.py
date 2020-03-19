@@ -70,7 +70,7 @@ class State(abc.ABC):
 
         :return: clone of self.
         """
-        return State(
+        return self.__class__(
             players={
                 player_key: player.clone()
                 for player_key, player in self.players.items()

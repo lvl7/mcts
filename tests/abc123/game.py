@@ -18,7 +18,7 @@ class Card(interface.Clonable):
         self.number = number
 
     def clone(self) -> "Card":
-        return Card(self.type, self.number)
+        return self.__class__(self.type, self.number)
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, Card):
@@ -83,7 +83,7 @@ class Player(player.Player):
         ]
 
     def clone(self) -> "Player":
-        return Player(
+        return self.__class__(
             name=self.name,
             hand=[card.clone() for card in self.hand],
             active=self.active

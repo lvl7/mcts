@@ -10,7 +10,7 @@ class Player(player.Player):
         self.hand = []
 
     def clone(self) -> "Player":
-        clone = Player()
+        clone = self.__class__()
         clone.hand = [card.clone() for card in self.hand]
 
         return clone
