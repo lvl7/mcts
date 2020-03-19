@@ -38,6 +38,8 @@ class State(abc.ABC):
     def next_states(self) -> Dict["Move", "State"]:
         if self._next_states is None:
             self._next_states = {move: None for move in self.find_next_moves()}
+            if not self._next_states:
+                self.final = True
 
         return self._next_states
 
@@ -53,16 +55,41 @@ class State(abc.ABC):
             )
         )
 
-    def execute_one_move(self):
-        # TODO picking move should be more sophisticated.
-        # TODO Took to account win ratio and number of picking this move before
+    def execute_one_move(self, quick=False):
+        """
+        Explore tree.
 
-        move = random.choice(list(self.next_states))
-        next_step = self.next_states[move]
+        Pick one move with based of knowledge (but slow) and simulate rest of game at random (but quick).
 
-        if next_step is None:
-            next_step = move.execute()
-            self.next_states[move] = next_step
+        :return: winner of game
+        """
+        if not self.next_states:
+            self.final = True
+            return self.pick_winner()
+
+        move = self.pick_move(quick)
+
+        next_state = self.next_states[move]
+        if next_state is None:
+            next_state = move.execute()
+            self.next_states[move] = next_state
+
+        return next_state.execute_one_move(quick=True)
+
+    def pick_move(self, quick=True) -> "Move":
+        if quick:
+            return random.choice(list(self.next_states.keys()))
+        else:
+            # TODO picking move should be more sophisticated.
+            # TODO Took to account win ratio and number of picking this move before
+            return random.choice(list(self.next_states.keys()))
+
+    @abc.abstractmethod
+    def pick_winner(self) -> "PlayerKey":
+        """
+        Pick winner from given state.
+        :return: winner
+        """
 
     def clone(self) -> "State":
         """

@@ -2,14 +2,13 @@ import itertools
 
 import random
 from functools import partial
-from typing import List, Mapping, Dict
+from typing import List, Dict
 
-from mcts import interface
+from mcts import interface, state
 from mcts import player
 from mcts.custom_type import PlayerKey
 from mcts.ilustrate import draw_tree
 from mcts.move import Move
-from mcts.state import State
 
 
 class Card(interface.Clonable):
@@ -31,6 +30,7 @@ class Card(interface.Clonable):
 
     def __str__(self):
         return f"{self.type}{self.number}"
+
 
 player_names = ["P1", "P2", "P3"]
 
@@ -91,6 +91,25 @@ class Player(player.Player):
             hand=[card.clone() for card in self.hand],
             active=self.active
         )
+
+
+class State(state.State):
+    def pick_winner(self) -> "PlayerKey":
+        """
+        Pick random winner.
+
+        Prefer player 0, then 1, then 2 ...
+
+        :return: winner
+        """
+        for player in self.players.keys():
+            if player not in player_names:
+                continue
+
+            if random.random() < 0.5:
+                return player
+
+        return player_names[0]
 
 
 def init_deck() -> "Player":
