@@ -1,10 +1,11 @@
 import pygraphviz as gz
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict
 
 from mcts.player import Player
 
 if TYPE_CHECKING:
     from mcts.state import State
+    from mcts.custom_type import PlayerKey
 
 
 def _get_player_description(player: "Player"):
@@ -13,20 +14,34 @@ def _get_player_description(player: "Player"):
     )
 
 
-def _get_players_description(players):
+def _get_players_description(players, win_stats: Dict["PlayerKey", int]):
     return "|".join(
-        f"{{{name}|{{{_get_player_description(player)}}}}}"
+        f"""
+            {{ 
+                {win_stats[name]}:{name}"
+                |{{
+                    {_get_player_description(player)} 
+                }} 
+            }}
+        """
         for name, player in players.items()
     )
 
 
-def _state_to_node(state):
+def _state_win_ratio(win_stats: Dict[str, int]):
+    return "|".join(
+        f"{{ {name} | {wins} }}"
+        for name, wins in win_stats.items()
+    )
+
+
+def _state_to_node(state: "State"):
     return f"""
         {{
             {{
                 {state.id_nr}|{state.final}
-            }}|
-            {_get_players_description(state.players)}
+            }}
+            |{_get_players_description(state.players, state.win_stats)}
         }}
     """
 
