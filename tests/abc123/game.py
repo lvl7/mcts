@@ -147,12 +147,8 @@ def init_board() -> "Player":
 
 
 def execute_game(state: "State"):
-    state.execute_one_move()
-    state.execute_one_move()
-    state.execute_one_move()
-    state.execute_one_move()
-    state.execute_one_move()
-    state.execute_one_move()
+    for i in range(1000):
+        state.execute_one_move()
 
     draw_tree.draw(state)
 

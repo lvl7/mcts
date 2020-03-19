@@ -1,4 +1,5 @@
 import itertools
+from collections import defaultdict
 
 import abc
 import random
@@ -29,6 +30,7 @@ class State(abc.ABC):
         self.players = players
 
         self.final = False
+        self.win_stats: Dict["PlayerKey", int] = defaultdict(int)
         self._next_states: Dict["Move", "State"] = None
 
         self.id_nr = self._nr
@@ -55,7 +57,7 @@ class State(abc.ABC):
             )
         )
 
-    def execute_one_move(self, quick=False):
+    def execute_one_move(self, quick=False) -> "PlayerKey":
         """
         Explore tree.
 
@@ -65,7 +67,9 @@ class State(abc.ABC):
         """
         if not self.next_states:
             self.final = True
-            return self.pick_winner()
+            winner = self.pick_winner()
+            self.win_stats[winner] += 1
+            return winner
 
         move = self.pick_move(quick)
 
@@ -74,7 +78,9 @@ class State(abc.ABC):
             next_state = move.execute()
             self.next_states[move] = next_state
 
-        return next_state.execute_one_move(quick=True)
+        winner = next_state.execute_one_move(quick=True)
+        self.win_stats[winner] += 1
+        return winner
 
     def pick_move(self, quick=True) -> "Move":
         if quick:
