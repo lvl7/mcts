@@ -45,6 +45,7 @@ def _construct_graph(graph: gz.AGraph, state):
                 u=state.id_nr,
                 v=next_state.id_nr,
                 key="l",
+                label=str(move)
             )
 
 

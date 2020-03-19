@@ -29,6 +29,8 @@ class Card(interface.Clonable):
             self.number == other.number,
         ])
 
+    def __str__(self):
+        return f"{self.type}{self.number}"
 
 player_names = ["P1", "P2", "P3"]
 
@@ -74,6 +76,7 @@ class Player(player.Player):
                 state_from=state,
                 player_in_move_key=player.name,
                 action=partial(Player.play_card, caster_key=player_key, card=card),
+                description=f"{player.name}:{card}",
                 consequences=[
                     player.end_turn,
                     player.next_player,

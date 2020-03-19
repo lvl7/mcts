@@ -27,6 +27,7 @@ class Move:
             state_from: "State",
             player_in_move_key: "PlayerKey",
             action: Callable[["State"], None],
+            description: str,
             consequences: List[Callable[["State"], None]]
     ):
         """
@@ -35,12 +36,14 @@ class Move:
         :param state_from: state from where move begins
         :param player_in_move_key: key for getting player from state
         :param action: action defining move - should define only one action - like playing a card
+        :param description: short description of move - like `Player1 plays K4`
         :param consequences: list of consequences after ``action`` - like adding score; redraw card; end turn
         """
         self.player_in_move_key = player_in_move_key
         self.state_from = state_from
         self.action = action
         self.consequences = consequences
+        self.description = description
 
     def execute(self) -> "State":
         """
@@ -55,3 +58,6 @@ class Move:
             consequence(state)
 
         return state
+
+    def __str__(self):
+        return self.description
