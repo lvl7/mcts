@@ -58,11 +58,14 @@ class Player(player.Player):
         caster.hand.remove(card)
         state.players["BOARD"].hand.append(card)
 
-    def end_turn(self, state: "State"):
-        self.active = False
+    @classmethod
+    def end_turn(cls, state: "State", caster_key: "PlayerKey"):
+        caster = state.players[caster_key]
+        caster.active = False
 
-    def next_player(self, state: "State"):
-        next_player_name = player_names[(player_names.index(self.name) + 1) % len(player_names)]
+    @classmethod
+    def next_player(cls, state: "State", caster_key: "PlayerKey"):
+        next_player_name = player_names[(player_names.index(caster_key) + 1) % len(player_names)]
         state.players[next_player_name].active = True
 
     @classmethod
@@ -78,8 +81,8 @@ class Player(player.Player):
                 action=partial(Player.play_card, caster_key=player_key, card=card),
                 description=f"{player.name}:{card}",
                 consequences=[
-                    player.end_turn,
-                    player.next_player,
+                    partial(Player.end_turn, caster_key=player_key),
+                    partial(Player.next_player, caster_key=player_key),
                 ]
             )
             for card in player.hand
@@ -109,7 +112,7 @@ class State(state.State):
             if random.random() < 0.5:
                 return player
 
-        return player_names[0]
+        return "BOARD"
 
 
 def init_deck() -> "Player":

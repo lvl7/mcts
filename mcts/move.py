@@ -39,6 +39,8 @@ class Move:
         :param description: short description of move - like `Player1 plays K4`
         :param consequences: list of consequences after ``action`` - like adding score; redraw card; end turn
         """
+        # TODO make sure that each of consequences is class methods as well
+        #      (need to NOT modify player - action and consequences will be used on clones of caster)
         self.player_in_move_key = player_in_move_key
         self.state_from = state_from
         self.action = action
