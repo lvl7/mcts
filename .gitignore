@@ -3,6 +3,7 @@ __pycache__
 
 # IDE
 .idea
+*.iml
 
 # user stuff
 venv
