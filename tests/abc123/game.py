@@ -1,3 +1,24 @@
+"""Simplified card game
+
+# items:
+Deck is composed with cards with two characteristics:
+ - symbol (A, B, C)
+ - number (1, 2, 3)
+
+# preparation:
+ - shuffle deck
+ - each player gets two cards
+
+# Rules:
+- Goal is to have empty hand after turn end
+
+# Turns:
+- player play card from hand
+- if played card symbol or number match last played card, player get two cards below played
+- check win condition
+
+"""
+
 import itertools
 
 import random
@@ -64,6 +85,23 @@ class Player(player.Player):
         caster.active = False
 
     @classmethod
+    def resolve_played_card(cls, state: "State", caster_key: "PlayerKey"):
+        caster: "Player" = state.players[caster_key]
+        board: "Player" = state.players["BOARD"]
+
+        last_played_cards = board.hand[-3:]
+        if len(last_played_cards) <= 1:
+            return
+
+        if (last_played_cards[-1].type == last_played_cards[-2].type
+            or last_played_cards[-1].number == last_played_cards[-2].number
+            ):
+
+            for card_to_draw in last_played_cards[:-1]:
+                caster.hand.append(card_to_draw)
+                board.hand.remove(card_to_draw)
+
+    @classmethod
     def next_player(cls, state: "State", caster_key: "PlayerKey"):
         next_player_name = player_names[(player_names.index(caster_key) + 1) % len(player_names)]
         state.players[next_player_name].active = True
@@ -82,6 +120,7 @@ class Player(player.Player):
                 description=f"{player.name}:{card}",
                 consequences=[
                     partial(Player.end_turn, caster_key=player_key),
+                    partial(Player.resolve_played_card, caster_key=player_key),
                     partial(Player.next_player, caster_key=player_key),
                 ]
             )
@@ -150,7 +189,7 @@ def init_board() -> "Player":
 
 
 def execute_game(state: "State"):
-    for i in range(1000):
+    for i in range(100):
         state.execute_one_move()
 
     draw_tree.draw(state)
