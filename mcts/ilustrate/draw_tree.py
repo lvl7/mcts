@@ -1,3 +1,5 @@
+from colorsys import hsv_to_rgb
+
 import pygraphviz as gz
 from typing import TYPE_CHECKING, Dict
 
@@ -45,12 +47,34 @@ def _state_to_node(state: "State"):
         }}
     """
 
+def _pick_color(state: "State"):
+    most_winning_player, player_wins = sorted(
+        state.win_stats.items(),
+        key=lambda player_stats: player_stats[0],
+        reverse=True,
+    )[0]
+
+    wins = sum(state.win_stats.values())
+
+    players = len(state.players)
+    player_no = list(state.players.keys()).index(most_winning_player)
+
+    color_tuple = hsv_to_rgb(player_no / players, player_wins / wins, 1)
+
+    colors_int = list(int(c * 255) for c in color_tuple)
+    hex_colors = list(f"{color:0>2X}" for color in colors_int)
+    color = "#" + "".join(hex_colors)
+
+    return color
+
 
 def _construct_graph(graph: gz.AGraph, state):
     graph.add_node(
         state.id_nr,
         label=_state_to_node(state),
         shape="record",
+        style="filled",
+        fillcolor=_pick_color(state),
     )
 
     for move, next_state in state.next_states.items():
