@@ -3,7 +3,7 @@ from collections import defaultdict
 
 import abc
 import random
-from typing import TYPE_CHECKING, Dict
+from typing import TYPE_CHECKING, Dict, Optional
 
 if TYPE_CHECKING:
     from mcts.custom_type import PlayerKey
@@ -65,9 +65,9 @@ class State(abc.ABC):
 
         :return: winner of game
         """
-        if not self.next_states:
+        winner = self.pick_winner()
+        if not self.next_states or winner:
             self.final = True
-            winner = self.pick_winner()
             self.win_stats[winner] += 1
             return winner
 
@@ -91,10 +91,10 @@ class State(abc.ABC):
             return random.choice(list(self.next_states.keys()))
 
     @abc.abstractmethod
-    def pick_winner(self) -> "PlayerKey":
+    def pick_winner(self) -> Optional["PlayerKey"]:
         """
         Pick winner from given state.
-        :return: winner
+        :return: winner or None if game is not end yet
         """
 
     def clone(self) -> "State":
