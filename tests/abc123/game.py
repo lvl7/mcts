@@ -23,7 +23,7 @@ import itertools
 
 import random
 from functools import partial
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from mcts import interface, state
 from mcts import player
@@ -136,7 +136,7 @@ class Player(player.Player):
 
 
 class State(state.State):
-    def pick_winner(self) -> "PlayerKey":
+    def pick_winner(self) -> Optional["PlayerKey"]:
         """
         Pick random winner.
 
@@ -144,14 +144,12 @@ class State(state.State):
 
         :return: winner
         """
-        for player in self.players.keys():
-            if player not in player_names:
+        for player_name, player in self.players.items():
+            if player_name not in player_names:
                 continue
 
-            if random.random() < 0.5:
-                return player
-
-        return "BOARD"
+            if not player.hand:
+                return player_name
 
 
 def init_deck() -> "Player":
